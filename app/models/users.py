@@ -1,0 +1,30 @@
+from database import Base
+from sqlalchemy import Table, Column, Integer, ForeignKey, String
+from sqlalchemy.orm import mapped_column, relationship
+
+user_to_user = Table(
+    'user_to_user', Base.metadata,
+    Column('follower_id', Integer, ForeignKey('users.id'), primary_key=True),
+    Column('following_id', Integer, ForeignKey('users.id'), primary_key=True), )
+
+
+class User(Base):
+    __tablename__ = 'users'
+    id = mapped_column(autoincrement=True, primary_key=True, index=True)
+    # api_key = mapped_column(String(255))
+    username = mapped_column(String(255), unique=True, index=True)
+    tweets = relationship(backref='user', cascade='all, delete-orphan')
+    likes = relationship(backref='user', cascade='all, delete-orphan')
+    following = relationship('User',
+                             secondary=user_to_user,
+                             primaryjoin=lambda: User.id == user_to_user.c.follower_id,
+                             secondaryjoin=lambda: User.id == user_to_user.c.following_id,
+                             backref='followers',
+                             lazy='selectin', )
+
+    def __repr__(self):
+        return self._repr(
+            id=self.id,
+            # api_key=self.api_key,
+            username=self.username,
+        )
