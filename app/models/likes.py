@@ -1,4 +1,4 @@
-from database import Base
+from app.database.database import Base
 from sqlalchemy.orm import mapped_column
 from sqlalchemy import ForeignKey
 
@@ -12,3 +12,6 @@ class Like(Base):
 
     def __repr__(self):
         return self._repr(id=self.id, user_id=self.user_id, tweet_id=self.tweet_id,)
+
+    def _repr(self, id, user_id, tweet_id):
+        pass

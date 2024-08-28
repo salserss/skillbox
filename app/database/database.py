@@ -6,11 +6,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from typing import AsyncGenerator
 
 
-class Base(AsyncAttrs, DeclarativeBase):  # !
+class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 
-DATABASE_URL = (f'postgresql+asyncpg2://{os.environ.get("DB_USERNAME")}:'
+DATABASE_URL = (f'postgresql+asyncpg://{os.environ.get("DB_USERNAME")}:'
                 f'{os.environ.get("DB_PASSWORD")}@{os.environ.get("DB_HOST")}'
                 f':5432/{os.environ.get("DB_NAME")}')
 
