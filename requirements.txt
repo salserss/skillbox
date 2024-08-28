@@ -1,2 +1,5 @@
 fastapi==0.112.2
 SQLAlchemy~=2.0.32
+pydantic~=2.8.2
+starlette~=0.38.2
+aiofiles~=24.1.0
