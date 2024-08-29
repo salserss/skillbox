@@ -13,12 +13,12 @@ user_to_user = Table(
 
 class User(Base):
     __tablename__ = 'users'
-    id = mapped_column(autoincrement=True, primary_key=True, index=True)
-    # api_key = mapped_column(String(255))
-    username = mapped_column(String(255), unique=True, index=True)
+    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True, index=True)
+    api_key: Mapped[str] = mapped_column(String(255))
+    username: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     tweets: Mapped[List["Tweet"]] = relationship(backref='user', cascade='all, delete-orphan')
     likes: Mapped[List["Like"]] = relationship(backref='user', cascade='all, delete-orphan')
-    following = relationship('User',
+    following: Mapped[List["None"]] = relationship('User',
                              secondary=user_to_user,
                              primaryjoin=lambda: User.id == user_to_user.c.follower_id,
                              secondaryjoin=lambda: User.id == user_to_user.c.following_id,

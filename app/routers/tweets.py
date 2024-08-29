@@ -13,7 +13,7 @@ from app.database.utils import (associate_media_with_tweet, get_tweet_by_id, get
                                 get_all_tweets, get_user_by_id, get_all_following_tweets)
 from app.schemas.base_shema import DefaultSchema
 
-router = APIRouter(prefix="/api", tags=["tweets_and_likes_v1"])
+router = APIRouter(prefix="/api", tags=["tweets_and_likes"])
 
 
 @router.post("/tweets", status_code=status.HTTP_201_CREATED, response_model=Union[TweetIn, TweetCreate],)
@@ -80,7 +80,7 @@ async def delete_like_from_tweet(tweet_id: int, current_user, session: AsyncSess
 
 
 @router.get("/tweets", status_code=status.HTTP_200_OK)
-async def get_tweets(current_user, session: AsyncSession = Depends(async_get_db),):
+async def get_tweets(session: AsyncSession = Depends(async_get_db), ):
     all_tweets = await get_all_tweets(session=session)
     all_following_tweets = []
     if all_tweets is None:
