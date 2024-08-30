@@ -3,7 +3,7 @@ from pathlib import Path
 from aiofiles import open
 from fastapi import UploadFile
 
-from settings import MEDIA_PATH
+from app.utils.settings import MEDIA_PATH
 
 
 async def check_or_get_filename(path: Path) -> Path:

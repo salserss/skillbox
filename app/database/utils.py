@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from fastapi import Depends, HTTPException, status
-from database import async_get_db
+from app.database.database import async_get_db
 from sqlalchemy import select, and_, or_, desc
 from app.models.users import User, Tweet, Like
 from app.models.media import Media

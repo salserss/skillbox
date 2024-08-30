@@ -7,7 +7,7 @@ from app.models.users import User
 from app.schemas.media_schema import MediaUpload
 from sqlalchemy.ext.asyncio import AsyncSession
 # from utils.auth import authenticate_user
-from app.utils.file_utils import save_uploaded_file
+from app.utils.file_utils import save_uploaded_file, MEDIA_PATH
 
 router = APIRouter(prefix="/api", tags=["media_v1"])
 
