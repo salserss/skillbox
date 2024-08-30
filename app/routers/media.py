@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # from utils.auth import authenticate_user
 from app.utils.file_utils import save_uploaded_file, MEDIA_PATH
 
-router = APIRouter(prefix="/api", tags=["media_v1"])
+router = APIRouter(prefix="/api", tags=["media"])
 
 
 @router.post(

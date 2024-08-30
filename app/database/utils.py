@@ -2,10 +2,23 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from fastapi import Depends, HTTPException, status
-from app.database.database import async_get_db
+from app.database.database import async_get_db, engine
 from sqlalchemy import select, and_, or_, desc
-from app.models.users import User, Tweet, Like
+from app.models.users import User, Tweet, Like, Base
 from app.models.media import Media
+
+
+async def init_models():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+async def get_user_by_api_key(api_key: str, session: AsyncSession = Depends(async_get_db)):
+    query = (select(User).where(User.api_key == api_key).options(selectinload(User.following),
+                                                                 selectinload(User.followers), ))
+    user = await session.execute(query)
+    return user.scalar_one_or_none()
+
 
 
 async def get_user_by_id(user_id: int, session: AsyncSession = Depends(async_get_db)):
@@ -26,14 +39,7 @@ async def check_follow_user_ability(current_user: User, user_being_followed: Use
 
 
 async def associate_media_with_tweet(tweet: Tweet, media_ids: List[int], session: AsyncSession = Depends(async_get_db),):
-    """
-    Associate one or more Media objects with a Tweet.
 
-    Args:
-        session (Session): The SQLAlchemy session.
-        tweet (Tweet): The Tweet object to associate with Media.
-        media_ids (List[int]): List of media IDs to associate with the Tweet.
-    """
     media_query = await session.execute(select(Media).filter(Media.id.in_(media_ids)))
     media_objects = media_query.scalars()
     for media in media_objects:
@@ -43,23 +49,7 @@ async def associate_media_with_tweet(tweet: Tweet, media_ids: List[int], session
 
 
 async def get_tweet_by_id(tweet_id: int, session: AsyncSession = Depends(async_get_db),):
-    """
-    Retrieve a tweet by its unique identifier.
 
-    Parameters:
-    - tweet_id (int): The unique identifier of the tweet to retrieve.
-    - session (AsyncSession, optional): An SQLAlchemy async session
-      (provided by `get_db_session`)
-      used to interact with the database.
-
-    Returns:
-    - Tweet: The retrieved tweet object.
-
-    Raises:
-    - HTTPException: If the tweet with the specified `tweet_id` is not
-      found in the database,
-      an HTTPException with a status code of 404 (Not Found) is raised.
-    """
     tweet = await session.get(Tweet, tweet_id)
 
     if not tweet:
@@ -71,13 +61,7 @@ async def get_tweet_by_id(tweet_id: int, session: AsyncSession = Depends(async_g
 
 
 async def get_media_by_tweet_id(tweet_id: int, session: AsyncSession = Depends(async_get_db)):
-    """
-    Get all Media objects associate with Tweet.
 
-    Args:
-        session (Session): The SQLAlchemy session.
-        tweet_id (int): The Tweet object id.
-    """
     media_query = await session.execute(select(Media).filter(Media.tweet_id == tweet_id))
     media_objects = media_query.scalars().all()
     return media_objects
