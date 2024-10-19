@@ -16,7 +16,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
 ### Step 2: Cloning the Repository
 
 - Clone the project repository to your computer
-> ``git clone https://gitlab.skillbox.ru/adrian_babira/python_advanced_diploma.git``
+> ``git clone https://github.com/salserss/skillbox``
 
 ### Step 3: **Docker-Compose**
 - Enter the repository in terminal:  
