@@ -8,9 +8,9 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY requirements.txt .
+COPY requirements_prod.txt .
 
 
-RUN pip install -r requirement.txt
+RUN pip install -r requirements_prod.txt
 
 COPY . .

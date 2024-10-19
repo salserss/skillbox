@@ -33,6 +33,35 @@ services:
         ports:
             - 8000:8000
 
+    db_test:
+        profiles: ["test"]
+        image: postgres:16.2-alpine3.19
+        hostname: db_test
+        env_file:
+            - db_test.env
+        volumes:
+            - ./init_test_postgres:/docker-entrypoint-initdb.d
+        networks:
+            - twitter_test_network
+        ports:
+            - "5432:5432"
+        restart: always
+
+    api_test:
+        profiles: ["test"]
+        build:
+          context: ./app/.
+          dockerfile: Dockerfile_test
+        env_file:
+            - app_test.env
+        command: sh -c 'python -m pytest -s -vv'
+        depends_on:
+            - db_test
+        networks:
+            - twitter_test_network
+        ports:
+            - 8000:8000
+
     server:
         profiles: ["dev"]
         build: ./server/.

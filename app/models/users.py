@@ -28,7 +28,7 @@ class User(Base):
     def __repr__(self):
         return self._repr(
             id=self.id,
-            # api_key=self.api_key,
+            api_key=self.api_key,
             username=self.username,
         )
 

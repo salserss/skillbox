@@ -1,9 +1,9 @@
 from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-from app.schemas.base_shema import DefaultSchema
-from app.schemas.user_schema import DefaultUser
-from app.models.likes import Like as LikeModel
-from app.schemas.media_schema import Media
+from .base_shema import DefaultSchema
+from .user_schema import DefaultUser
+from .models.likes import Like as LikeModel
+from .media_schema import Media
 
 
 class Like(BaseModel):

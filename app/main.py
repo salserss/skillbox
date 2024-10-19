@@ -1,51 +1,47 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
-from app.routers import media, tweets, users
+from database.database import async_get_db, engine
+from database.utils import create_test_user_if_not_exist, init_models
+from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError, ResponseValidationError
+from routers import media, tweets, users
+from starlette.exceptions import HTTPException
+from utils.exceptions import (
+    custom_http_exception_handler,
+    response_validation_exception_handler,
+    validation_exception_handler,
+)
 
-app: FastAPI = FastAPI(title="main")
-app_api: FastAPI = FastAPI(title="api")
+session = async_get_db()
 
-app.mount("/api", app_api, name='api')
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-templates = Jinja2Templates(directory="static")
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """
+    Function that handles startup and shutdown events.
+    To understand more, read https://fastapi.tiangolo.com/advanced/events/
+    """
+    await init_models()
+    await create_test_user_if_not_exist(await anext(session))
 
-origins = ["http://127.0.0.1:8000"]
+    yield
+    if engine is not None:
+        await engine.dispose()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+
+app = FastAPI(lifespan=lifespan, debug=True, docs_url="/docs")
+
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(HTTPException, custom_http_exception_handler)
+app.add_exception_handler(
+    ResponseValidationError, response_validation_exception_handler
 )
 
 
-@app.get("/", response_class=HTMLResponse)
-async def get_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+app.include_router(media.router)
+app.include_router(users.router)
+app.include_router(tweets.router)
 
-
-@app_api.get("/users/me")
-async def get_user_me():
-    return {
-        "result": "true",
-        "user": {
-            "id": 1,
-            "name": "str",
-            "followers": [],
-            "following": []
-        }
-    }
-
-
-app_api.include_router(media.router)
-app_api.include_router(tweets.router)
-app_api.include_router(users.router)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
