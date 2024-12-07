@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from starlette.responses import JSONResponse
 from app.database.utils import get_user_by_id, check_follow_user_ability
-from app.schemas.base_shema import DefaultSchema
+from app.schemas.base_schema import DefaultSchema
 
 router = APIRouter(prefix="/api", tags=["users"])
 

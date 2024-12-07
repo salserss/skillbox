@@ -11,7 +11,7 @@ from app.models.tweets import Tweet
 from app.models.likes import Like
 from app.database.utils import (associate_media_with_tweet, get_tweet_by_id, get_media_by_tweet_id, get_like_by_id,
                                 get_all_tweets, get_user_by_id, get_all_following_tweets)
-from app.schemas.base_shema import DefaultSchema
+from app.schemas.base_schema import DefaultSchema
 
 router = APIRouter(prefix="/api", tags=["tweets_and_likes"])
 

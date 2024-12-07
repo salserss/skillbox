@@ -4,14 +4,14 @@ from typing import Dict, Mapping
 
 import pytest
 import pytest_asyncio
-from database.database import Base
-from database.database import async_get_db as get_db_session
+from app.database.database import Base
+from app.database.database import async_get_db as get_db_session
 from faker import Faker
 from fastapi import FastAPI
 from httpx import AsyncClient
-from main import app
-from models.tweets import Tweet
-from models.users import User
+from app.main import app
+from app.models.tweets import Tweet
+from app.models.users import User
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -22,16 +22,25 @@ TEST_USERNAME = os.environ.get("USERNAME")
 TEST_API_KEY = os.environ.get("API_KEY")
 TEST_SERVER_PORT = os.environ.get("SERVER_PORT")
 
-unauthorized_structure_response: Dict = {
-    "result": False,
-    "error_type": "Unauthorized",
-    "error_message": "API key authentication failed",
-}
+
+# unauthorized_structure_response: Dict = {
+#     "result": False,
+#     "error_type": "Unauthorized",
+#     "error_message": "API key authentication failed",
+# }
+
+@pytest.fixture
+def unauthorized_structure_response() -> dict:
+    return {
+        "result": False,
+        "error_type": "Unauthorized",
+        "error_message": "API key authentication failed",
+    }
 
 
 @pytest_asyncio.fixture()
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
-    DATABASE_URL = (
+    DATABASE_URL: str = (
         f'postgresql+asyncpg://{os.environ.get("DB_USERNAME")}:'
         f'{os.environ.get("DB_PASSWORD")}@'
         f'{os.environ.get("DB_HOST")}'
@@ -68,29 +77,29 @@ async def client(test_app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
     if TEST_API_KEY is not None:
         test_headers = {"api-key": TEST_API_KEY}
     async with AsyncClient(
-        app=test_app,
-        base_url=f"http://localhost:{TEST_SERVER_PORT}/api",
-        headers=test_headers,
+            app=test_app,
+            base_url=f"http://localhost:{TEST_SERVER_PORT}/api",
+            headers=test_headers,
     ) as client:
         yield client
 
 
 @pytest_asyncio.fixture()
 async def invalid_client(
-    test_app: FastAPI,
+        test_app: FastAPI,
 ) -> AsyncGenerator[AsyncClient, None]:
     test_headers: Mapping[str, str] = {"api-key": "unauthorized"}
     async with AsyncClient(
-        app=test_app,
-        base_url=f"http://localhost:{TEST_SERVER_PORT}/api",
-        headers=test_headers,
+            app=test_app,
+            base_url=f"http://localhost:{TEST_SERVER_PORT}/api",
+            headers=test_headers,
     ) as client:
         yield client
 
 
 @pytest_asyncio.fixture()
 async def create_random_tweets(
-    client: AsyncClient, faker: Faker, db_session: AsyncSession
+        client: AsyncClient, faker: Faker, db_session: AsyncSession
 ):
     for user_id in range(2, 6):
         new_tweet = Tweet(

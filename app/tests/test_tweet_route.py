@@ -147,7 +147,7 @@ class TestTweetAPI:
         ],
     )
     async def test_post_unauthorized_access(
-        self, invalid_client: AsyncClient, unauthorized: str
+        self, invalid_client: AsyncClient, unauthorized: str, unauthorized_structure_response
     ):
         response = await invalid_client.post(unauthorized)
         assert response.status_code == 401
@@ -156,14 +156,14 @@ class TestTweetAPI:
     @pytest.mark.asyncio
     @pytest.mark.parametrize("unauthorized", ["/tweets/1", "/tweets/2/likes"])
     async def test_delete_wrong_auth(
-        self, invalid_client: AsyncClient, unauthorized: str
+        self, invalid_client: AsyncClient, unauthorized: str, unauthorized_structure_response
     ):
         response = await invalid_client.delete(unauthorized)
         assert response.status_code == 401
         assert response.json() == unauthorized_structure_response
 
     @pytest.mark.asyncio
-    async def test_get_wrong_auth(self, invalid_client: AsyncClient):
+    async def test_get_wrong_auth(self, invalid_client: AsyncClient, unauthorized_structure_response):
         if hasattr(self, "base_url"):
             response = await invalid_client.get(self.base_url)
             assert response.status_code == 401

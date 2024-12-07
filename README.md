@@ -11,7 +11,7 @@ It's fully asynchronous and easy to use. It can be
 Before you begin, make sure you have the following prerequisites installed on your system (Linux-based OS):
 
 - **Docker Desktop 4.22.1**
-- **docker-compose 1.29.2**
+- **docker-compose 2.29.2**
 
 ### Step 2: Cloning the Repository
 

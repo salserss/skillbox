@@ -4,9 +4,10 @@ from shutil import rmtree
 
 import pytest
 from httpx import AsyncClient
-from utils.settings import MEDIA_PATH
 
-from .conftest import TEST_USERNAME
+# from app.tests.conftest import TEST_USERNAME
+from app.utils.settings import MEDIA_PATH
+
 
 
 @pytest.fixture(scope="class")
@@ -29,7 +30,8 @@ class TestMediaAPI:
         cls.test_user_media_path = MEDIA_PATH / TEST_USERNAME
 
     @pytest.mark.asyncio
-    async def test_media_route(self, client: AsyncClient, temp_media_dir):
+    async def test_media_route(self, client: AsyncClient, temp_media_dir,
+                               unauthorized_structure_response):
         if hasattr(self, "base_url") and hasattr(self, "files"):
             response = await client.post(self.base_url, files=self.files)
 

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 from typing import List
-from .base_schema import DefaultSchema
+from app.schemas.base_schema import DefaultSchema
 
 class DefaultUser(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
